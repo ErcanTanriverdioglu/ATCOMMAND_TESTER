@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -58,46 +59,36 @@ const (
 )
 
 func main() {
-	fmt.Println("SCANNING COM PORT...")
-	ports, err := serial.GetPortsList()
-	if err != nil {
-		log.Fatal("COM LIST GET ERROR:", err)
-	}
-	if len(ports) == 0 {
-		log.Fatal("COM LIST NOT FIND!")
-	}
-	for _, port := range ports {
-		fmt.Println("USABLE COM:")
-		fmt.Println("-", port)
+	// Flag ile COM port ve Baud rate'i komut satırından alma
+	comPort := flag.String("com", "", "COM Port (e.g., COM9)")
+	baudRate := flag.Int("baud", 115200, "Baud Rate (e.g., 115200)")
+
+	// Flagleri işle
+	flag.Parse()
+
+	if *comPort == "" {
+		log.Fatal("COM PORT is required")
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("\nCOM PORT SELECT: ")
-	comPort, _ := reader.ReadString('\n')
-	comPort = strings.TrimSpace(comPort)
-
-	fmt.Print("\nBAUD RATE: ")
-	baudRateStr, _ := reader.ReadString('\n')
-	baudRateStr = strings.TrimSpace(baudRateStr)
-
-	var baudRate int
-	if _, err := fmt.Sscanf(baudRateStr, "%d", &baudRate); err != nil {
-		log.Fatal("INVALID BAUD RATE:", err)
-	}
+	fmt.Printf("Using COM Port: %s\n", *comPort)
+	fmt.Printf("Using Baud Rate: %d\n", *baudRate)
 
 	mode := &serial.Mode{
-		BaudRate: baudRate,
+		BaudRate: *baudRate,
 		Parity:   serial.NoParity,
 		DataBits: 8,
 		StopBits: serial.OneStopBit,
 	}
 
-	port, err := serial.Open(comPort, mode)
+	port, err := serial.Open(*comPort, mode)
 	if err != nil {
 		log.Fatal("PORT OPEN ERROR:", err)
 	}
 	defer port.Close()
 
+	reader := bufio.NewReader(os.Stdin)
+
+	// Kullanıcıya mod seçtirme
 	fmt.Print("\nCHOOSE MODE (TEST / MANUAL): ")
 	modeInput, _ := reader.ReadString('\n')
 	modeInput = strings.TrimSpace(strings.ToUpper(modeInput))
@@ -156,7 +147,7 @@ func runManualMode(port serial.Port, reader *bufio.Reader) {
 		}
 
 		// 5 saniye boyunca gelen cevapları oku
-		readAllResponses(port, 5*time.Second)
+		readAllResponses(port, 3*time.Second)
 	}
 }
 
