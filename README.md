@@ -14,10 +14,14 @@ AT Commands begin to be sent in order.
 ---------------------------------------------------------------
 
 MANUAL MODE: Enter Command. "EXIT" for exit.
+
 MANUAL >> AT
+
 
 OK
 
+
 ----------------------------------------------------------------
 MANUAL >> EXIT
+
 MANUAL MOD STOPPED.
