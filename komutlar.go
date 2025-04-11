@@ -98,7 +98,7 @@ func main() {
 		fmt.Println("\nTEST MODE: Sending AT Command...")
 		runTestMode(port)
 	case "MANUAL":
-		fmt.Println("\nMANUAL MODE: Enter Command. \"STOP\" for exit.")
+		fmt.Println("\nMANUAL MODE: Enter Command. \"EXIT\" for exit.")
 		runManualMode(port, reader)
 	default:
 		fmt.Println("Error. Program terminated.")
@@ -131,7 +131,7 @@ func runManualMode(port serial.Port, reader *bufio.Reader) {
 		}
 
 		input = strings.TrimSpace(input)
-		if strings.ToUpper(input) == "STOP" {
+		if strings.ToUpper(input) == "EXIT" {
 			fmt.Println("MANUAL MOD STOPPED.")
 			break
 		}
